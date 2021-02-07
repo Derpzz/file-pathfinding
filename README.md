@@ -4,7 +4,7 @@ This is a basic implementation of the dijkstra pathfinding algorithm that lets y
 such as a _start_, an _end_ and multiple _ways_. It will output a file similar to the input file
 only containing one of the shortest _ways_ from _start_ to _end_. Additionally in the console output you can find the coordinates
 (line and column) of the generated path. With this code it is also possible to run this algorithm in a char matrix.
-The open-source graph library of QUALiS-NRW that can be found in the `graph` folder has been used to represent the file internally as a graph. The authors and the documentation can be found directly in the graph files. https://www.schulentwicklung.nrw.de/lehrplaene/upload/klp_SII/if/MaterialZABI/2020-03-11_Implementationen_von_Klassen_fuer_das_Zentralabitur_ab_2018.zip
+The open-source graph library by QUALiS-NRW can be found in the `graph` folder and has been used to represent the file internally as a graph. The authors and the documentation can be found directly in the graph files ( https://www.schulentwicklung.nrw.de/lehrplaene/upload/klp_SII/if/MaterialZABI/2020-03-11_Implementationen_von_Klassen_fuer_das_Zentralabitur_ab_2018.zip ).
 
 ## Usage
 By default this character preset is used with all unsed characters treatet as empty:
