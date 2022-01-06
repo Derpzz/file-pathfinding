@@ -1,6 +1,5 @@
 import graph.Vertex;
 
-@SuppressWarnings("serial")
 public class DijkstraVertex extends Vertex{
     
     private int distance;

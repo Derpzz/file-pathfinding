@@ -26,6 +26,7 @@ import java.io.Serializable;
  * @version Generisch_03 2014-03-01
  */
 @SuppressWarnings("serial")
+@Deprecated
 public class List<ContentType> implements Serializable{
 
   /* --------- Anfang der privaten inneren Klasse -------------- */

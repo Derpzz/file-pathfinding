@@ -4,14 +4,15 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class GraphConverter {
+
+    private static final Position start = Position.start;
+    private static final Position end = Position.end;
+    private static final Position way = Position.way;
+    private static final Position empty = Position.empty;
+
     public static Graph matrixToGraph(char[][] matrix){
         Graph g = new Graph();
         List<Coordinate> coordinates = new ArrayList<Coordinate>();
-
-        Position start = Position.start;
-        Position end = Position.end;
-        Position way = Position.way;
-        Position empty = Position.empty;
         Position currentPosition;
         
         for(int i = 0; i < matrix.length; i++){
@@ -54,10 +55,6 @@ public class GraphConverter {
 
     public static char[][] pathToMatrix(List<Coordinate> shortestPath){
         char[][] matrix;
-        //Position start = Position.start; NOT NEEDED
-        //Position end = Position.end;
-        //Position way = Position.way;
-        Position empty = Position.empty;
         
         //Get largestX and largestY to determine arrayLength
         int biggestX = 0;

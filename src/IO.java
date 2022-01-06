@@ -19,6 +19,10 @@ public class IO {
 
     public char[][] readFileToMatrix(String path){
         Pair<List<String>, Integer> pair = null;
+
+        if(path.isBlank())
+            path = getInput("Default is fileTest.txt in current directory\nPath of input file:");
+
         try{
             pair = readFile(path);
         } catch(Exception e){
@@ -89,6 +93,10 @@ public class IO {
     public static void writeCoordinatesToFile(String filePath, List<Coordinate> shortestPath){
         char[][] matrix = GraphConverter.pathToMatrix(shortestPath);
         String content = "";
+
+        if(filePath.isBlank())
+            filePath = IO.getInput("Default is output.txt in current directory\nPath of output file:");
+
         for(char[] vector : matrix){
             for(char letter : vector){
                 content += letter;
@@ -117,7 +125,7 @@ public class IO {
                     print(e.getMessage());
                 }
             } else {
-            System.out.println("File already exists at location \"" + filePath + "\".\nPls delete it... I am too scared to write to it (っ °Д °;)っ");
+            System.out.println("File already exists at location \"" + filePath + "\".\nPls delete it... I am too scared to write to it");
             }
         } catch(Exception e){
             print("Something went wrong while writing the file. Can't tell you what but it went wrong for sure!");

@@ -1,4 +1,3 @@
-@SuppressWarnings("serial")
 public class Coordinate extends DijkstraVertex {
     
     private int x;

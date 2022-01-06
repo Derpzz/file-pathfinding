@@ -1,6 +1,6 @@
 package graph;
 
-import java.io.Serializable;
+//import java.io.Serializable;
 
 /**
  * <p>
@@ -18,8 +18,8 @@ import java.io.Serializable;
  * @author Volker Quade
  * @version April 2015
  */
-@SuppressWarnings("serial")
-public class Vertex implements Serializable{
+//@SuppressWarnings("serial")
+public class Vertex /*implements Serializable*/{
   //Einmalige ID des Knotens, Inhaltsobjekt und Markierung
   private String id;
   private boolean mark;
@@ -37,7 +37,7 @@ public class Vertex implements Serializable{
    * Die Anfrage liefert die ID des Knotens als String.
    */
   public String getID(){
-    return new String(id);
+    return id;
   }
 
   /**

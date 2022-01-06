@@ -1,7 +1,11 @@
 import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 
-import graph.*;
+import graph.Edge;
+import graph.Vertex;
+import graph.Graph;
 
 public class Dijkstra {
 
@@ -14,102 +18,93 @@ public class Dijkstra {
     private Graph OriginGraph;
     private Graph DijkstraGraph;
     private Queue<Coordinate> VertexList;
+    private static final Position start = Position.start;
+    private static final Position end = Position.end;
 
     public Dijkstra(Graph g){
         this.OriginGraph = g;
         this.VertexList = new LinkedList<>();
     }
 
-    public Graph findShortestPathFromTo(Coordinate from, Coordinate to){
-        this.DijkstraGraph = OriginGraph;
-        from.setDistance(0);
-        processVertices(from);
-        return DijkstraGraph;
-    }
-
     private void processVertices(Coordinate curVertex){
         if(curVertex == null)
             return;
-        curVertex.setMark(true);
-        List<Edge> curEdgesProp = DijkstraGraph.getEdges(curVertex);
-        //for(Edge curEdge : curEdgesProp)
-        //Nicht möglich wegen propritärer Lösung der Klasse graph.List:
-        //Konvertierung nötig in java.util.List, da iterator nötig ist
-        ListConverter<Edge, Edge> converter = new ListConverter<>();
-        java.util.List<Edge> curEdges = converter.nrwListToList(curEdgesProp);
 
-        for(Edge curEdge : curEdges){
-            //Convert Vertex[] to Coordinate[]
-            Coordinate[] vertices = new Coordinate[2]; 
-            Vertex[] oldVertex = curEdge.getVertices();
-            vertices[0] = (Coordinate) oldVertex[0];
-            vertices[1] = (Coordinate) oldVertex[1];
+        this.DijkstraGraph = OriginGraph;
+        curVertex.setDistance(0);
 
-            if(vertices[0]==curVertex){
-                int distance = curVertex.getDistance() + (int) curEdge.getWeight();
-                if(vertices[1].getDistance()==-1 || distance < vertices[1].getDistance()){
-                    vertices[1].setDistance(distance);
-                    vertices[1].setPrevious(curVertex);
-                }
+        while(curVertex!=null){
+            curVertex.setMark(true);
+            List<Edge> curEdgesProp = DijkstraGraph.getEdges(curVertex);
+            List<Edge> curEdges = curEdgesProp;
 
+            for(Edge curEdge : curEdges){
+                //Convert Vertex[] to Coordinate[]
+                Coordinate[] vertices = new Coordinate[2]; 
+                Vertex[] oldVertex = curEdge.getVertices();
+                vertices[0] = (Coordinate) oldVertex[0];
+                vertices[1] = (Coordinate) oldVertex[1];
+
+                if(vertices[0]==curVertex){
+                    int distance = curVertex.getDistance() + (int) curEdge.getWeight();
+                    if(vertices[1].getDistance()==-1 || distance < vertices[1].getDistance()){
+                        vertices[1].setDistance(distance);
+                        vertices[1].setPrevious(curVertex);
+                    }
                 if(!vertices[1].isMarked())
                     VertexList.add(vertices[1]);
-            } else if(vertices[1]==curVertex){
-                int distance = curVertex.getDistance() + (int)curEdge.getWeight();
-                if(vertices[0].getDistance()==-1 || distance < vertices[0].getDistance()){
-                    vertices[0].setDistance(distance);
-                    vertices[0].setPrevious(curVertex);
-                }
 
-                if(!vertices[0].isMarked())
-                    VertexList.add(vertices[0]);
+                } else if(vertices[1]==curVertex){
+                    int distance = curVertex.getDistance() + (int) curEdge.getWeight();
+                    if(vertices[0].getDistance()==-1 || distance < vertices[0].getDistance()){
+                        vertices[0].setDistance(distance);
+                        vertices[0].setPrevious(curVertex);
+                    }
+                    if(!vertices[0].isMarked())
+                        VertexList.add(vertices[0]);
+                    }   
             }
+            curVertex = VertexList.poll();
         }
-        processVertices(VertexList.poll());
+        
+        //processVertices(VertexList.poll()); For recursive exec
     }
 
-    public void getWay(String filePath){
-        java.util.List<Coordinate> vertices = new ListConverter<Coordinate, Vertex>().nrwListToList(OriginGraph.getVertices());
-        Pair<Coordinate, Coordinate> Coordinate;
+    public void getWay(String filePath) throws Exception{
+        List<Coordinate> vertices = Converter.EdgeToCoordList(OriginGraph.getVertices());
+        Pair<Coordinate, Coordinate> coordinate;
+        Coordinate from;
+        Coordinate to;
 
+        //Determine start and end
         try{
-            Coordinate = getStartEnd(vertices);
+            coordinate = getStartEnd(vertices);
         } catch(Exception e){
             IO.print(e.getMessage());
             return;
         }
-        
-        if(Coordinate.first==null||Coordinate.second==null){
-            IO.print("Well you forgot the start or the end or maybe the whole file! But I'm not going to give you an empty file!");
-            IO.writeFile(filePath, "Have a nice day! ヾ(￣▽￣) Bye~Bye~");
-            return;
-        }
             
-        Coordinate from = Coordinate.first;
-        Coordinate to = Coordinate.second;
+        from = coordinate.first;
+        to = coordinate.second;
 
         if(DijkstraGraph==null){
-            findShortestPathFromTo(from, to);
+            processVertices(from);
         }
 
         //Getting the path
-        java.util.List<Coordinate> path = new java.util.ArrayList<Coordinate>();
-        Coordinate aktuell = to;
-        while(aktuell!=from){
-            path.add(0, aktuell);
-            //Debug file coords
-            if(aktuell!=null){
-                System.out.println(aktuell.getID());
-            }
-            else{
+        List<Coordinate> path = new ArrayList<Coordinate>();
+        Coordinate current = to;
+        while(current!=from){
+            path.add(0, current);
+            if(current==null){
                 IO.print("There's no possible way...I guess");
                 return;
             }
-            aktuell = (Coordinate)aktuell.getPrevious();
+            current = (Coordinate)current.getPrevious();
         }
-        path.add(0, aktuell);
-        System.out.println(aktuell.getID());
+        path.add(0, current);
 
+        IO.print("Done!");
         IO.writeCoordinatesToFile(filePath, path);
     }
 
@@ -117,8 +112,6 @@ public class Dijkstra {
         Pair<Coordinate, Coordinate> startToEnd = new Pair<Coordinate, Coordinate>();
         Coordinate from = null;
         Coordinate to = null;
-        Position start = Position.start;
-        Position end = Position.end;
 
         for(Coordinate vertex : vertices){
             if(vertex.getPosition()==start)
@@ -133,14 +126,12 @@ public class Dijkstra {
                     throw new Exception("Multiple last nodes");
         }
 
+        if(from==null||to==null)
+            throw new Exception("Well you forgot the start or the end or maybe the whole file!");
+
         startToEnd.first = from;
         startToEnd.second = to;
 
         return startToEnd;
     }
-
-    /*public static Graph findShortestPathFromTo(Graph g, Vertex from, Vertex to){      TO BE DONE
-        Queue<DijkstraVertex> q = new LinkedList<>();
-        return new Graph();
-    }*/
 }

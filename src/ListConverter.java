@@ -1,6 +1,7 @@
 import java.util.LinkedList;
 //import graph.*;
 
+@Deprecated
 public class ListConverter<E, E2> {
     public java.util.List<E> nrwListToList(graph.List<E2> propList){
         java.util.List<E> newList = new LinkedList<>();

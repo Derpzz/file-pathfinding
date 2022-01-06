@@ -1,6 +1,6 @@
 package graph;
 
-import java.io.Serializable;
+//import java.io.Serializable;
 
 /**
  * <p>
@@ -19,8 +19,8 @@ import java.io.Serializable;
  * @author Volker Quade
  * @version Mai 2015
  */
-@SuppressWarnings("serial")
-public class Edge implements Serializable{  
+//@SuppressWarnings("serial")
+public class Edge /*implements Serializable*/{  
   private Vertex[] vertices;
   private double weight;
   private boolean mark;
@@ -43,10 +43,7 @@ public class Edge implements Serializable{
    * genau zwei Eintraege mit den Indexwerten 0 und 1.
    */
   public Vertex[] getVertices(){
-    Vertex[] result = new Vertex[2];
-    result[0] = vertices[0]; 
-    result[1] = vertices[1];
-    return result;
+    return vertices;
   }
   
   /**

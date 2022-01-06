@@ -1,6 +1,8 @@
 package graph;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.io.Serializable;
+//import java.io.Serializable;
 
 /**
  * <p>
@@ -22,8 +24,8 @@ import java.io.Serializable;
  * @author Volker Quade
  * @version April 2015
  */
-@SuppressWarnings("serial")
-public class Graph implements Serializable{
+//@SuppressWarnings("serial")
+public class Graph /*implements Serializable*/{
   private List<Vertex> vertices;
   private List<Edge> edges;
 
@@ -33,42 +35,22 @@ public class Graph implements Serializable{
    */
   public Graph(){
     //Leere Listen fuer Knoten und Kanten erstellen
-    vertices = new List<Vertex>();
-    edges = new List<Edge>();
+    vertices = new ArrayList<Vertex>();
+    edges = new ArrayList<Edge>();
   }
 
   /**
    * Die Anfrage liefert eine Liste aller Knotenobjekte vom Typ List<Vertex>.
    */
   public List<Vertex> getVertices(){
-    //Eine neue Liste mit allen Vertex-Objekten erstellen.
-    List<Vertex> result = new List<Vertex>();
-    vertices.toFirst();
-    while (vertices.hasAccess()){
-      result.append(vertices.getContent());
-      vertices.next();
-    }
-    //Aktuelles Element zum Anfang bewegen.
-    result.toFirst();
-
-    return result;
+    return vertices;
   }
 
   /**
    * Die Anfrage liefert eine Liste aller Kantenobjekte vom Typ List<Edge>.
    */
   public List<Edge> getEdges(){
-    //Eine neue Liste mit allen Edge-Objekten erstellen.
-    List<Edge> result = new List<Edge>();
-    edges.toFirst();
-    while (edges.hasAccess()){
-      result.append(edges.getContent());
-      edges.next();
-    }
-    //Aktuelles Element zum Anfang bewegen.
-    result.toFirst();
-
-    return result;
+    return edges;
   }
 
   /**
@@ -78,12 +60,11 @@ public class Graph implements Serializable{
   public Vertex getVertex(String pID){
     //Vertex-Objekt mit pID als ID suchen
     Vertex result = null;
-    vertices.toFirst();
-    while (vertices.hasAccess() && result == null){
-      if (vertices.getContent().getID().equals(pID)){
-        result = vertices.getContent();
+    for (Vertex vertex:vertices){
+      if (vertex.getID().equals(pID)){
+        result = vertex;
+        break;
       }
-      vertices.next();
     }
 
     //Objekt zurueckliefern
@@ -100,17 +81,16 @@ public class Graph implements Serializable{
     if (pVertex != null && pVertex.getID() != null) {
       //Pruefen, ob nicht schon ein Vertex mit gleicher ID enthalten ist.
       boolean freeID = true;
-      vertices.toFirst();
-      while (vertices.hasAccess() && freeID){
-        if (vertices.getContent().getID().equals(pVertex.getID())){
+      for (Vertex vertex:vertices /*&& freeID*/){
+        if (vertex.getID().equals(pVertex.getID())){
           freeID = false;
+          break;
         }
-        vertices.next();
       }
 
       //Wenn die ID noch frei ist, den Vertex einfuegen, sonst nichts tun.
       if (freeID){
-        vertices.append(pVertex);      
+        vertices.add(pVertex);      
       }
     }
   }
@@ -123,11 +103,13 @@ public class Graph implements Serializable{
     if (pEdge != null){
       Vertex[] vertexPair = pEdge.getVertices();
       if (vertexPair[0] != null && vertexPair[1] != null && 
-      this.getVertex(vertexPair[0].getID()) == vertexPair[0] && 
-      this.getVertex(vertexPair[1].getID()) == vertexPair[1] &&
+      // this.getVertex(vertexPair[0].getID()) == vertexPair[0] && 
+      // this.getVertex(vertexPair[1].getID()) == vertexPair[1] &&
+      vertices.contains(vertexPair[0]) &&
+      vertices.contains(vertexPair[1]) &&
       this.getEdge(vertexPair[0], vertexPair[1]) == null &&
       vertexPair[0] != vertexPair[1]){
-        edges.append(pEdge); 
+        edges.add(pEdge); 
       }
     }
   }
@@ -138,24 +120,15 @@ public class Graph implements Serializable{
    */
   public void removeVertex(Vertex pVertex){
     //Inzidente Kanten entfernen.
-    edges.toFirst();
-    while (edges.hasAccess()){
-      Vertex[] akt = edges.getContent().getVertices();
+    for (Edge edge:edges){
+      Vertex[] akt = edge.getVertices();
       if (akt[0] == pVertex || akt[1] == pVertex){
-        edges.remove();
-      } else {
-        edges.next();
+        edges.remove(edge);
       }
     }
 
     //Knoten entfernen
-    vertices.toFirst();
-    while (vertices.hasAccess() && vertices.getContent()!= pVertex){
-      vertices.next();
-    }
-    if (vertices.hasAccess()){
-      vertices.remove();
-    }
+    vertices.remove(pVertex);
   }
 
   /**
@@ -164,24 +137,17 @@ public class Graph implements Serializable{
    */
   public void removeEdge(Edge pEdge){
     //Kante aus Kantenliste des Graphen entfernen.
-    edges.toFirst();
-    while (edges.hasAccess()){
-      if (edges.getContent() == pEdge){
-        edges.remove();
-      } else {
-        edges.next();
-      }
-    }
+
+    //KÖNNTE DIE KANTE AUCH DOPPELT VORKOMMEN?
+    edges.remove(pEdge);
   }
 
   /**
    * Der Auftrag setzt die Markierungen aller Knoten des Graphen auf pMark.
    */
   public void setAllVertexMarks(boolean pMark){
-    vertices.toFirst();
-    while (vertices.hasAccess()){
-      vertices.getContent().setMark(pMark);
-      vertices.next();
+    for (Vertex vertex:vertices){
+      vertex.setMark(pMark);
     }
   }
 
@@ -189,10 +155,8 @@ public class Graph implements Serializable{
    * Der Auftrag setzt die Markierungen aller Kanten des Graphen auf pMark.
    */
   public void setAllEdgeMarks(boolean pMark){
-    edges.toFirst();
-    while (edges.hasAccess()){
-      edges.getContent().setMark(pMark);
-      edges.next();
+    for (Edge edge:edges){
+      edge.setMark(pMark);
     }
   }
 
@@ -201,12 +165,11 @@ public class Graph implements Serializable{
    */
   public boolean allVerticesMarked(){
     boolean result = true;
-    vertices.toFirst();
-    while (vertices.hasAccess()){
-      if (!vertices.getContent().isMarked()){
+    for (Vertex vertex:vertices){
+      if (!vertex.isMarked()){
         result = false;
+        break;
       }
-      vertices.next();
     }
     return result;
   }
@@ -216,12 +179,11 @@ public class Graph implements Serializable{
    */
   public boolean allEdgesMarked(){
     boolean result = true;
-    edges.toFirst();
-    while (edges.hasAccess()){
-      if (!edges.getContent().isMarked()){
+    for (Edge edge:edges){
+      if (!edge.isMarked()){
         result = false;
+        break;
       }
-      edges.next();
     }
     return result;
   }
@@ -232,18 +194,16 @@ public class Graph implements Serializable{
    * wird eine leere Liste zurueckgeliefert.
    */
   public List<Vertex> getNeighbours(Vertex pVertex){
-    List<Vertex> result = new List<Vertex>();
-    edges.toFirst();
-    while (edges.hasAccess()){
-      Vertex[] vertexPair = edges.getContent().getVertices();
+    List<Vertex> result = new ArrayList<Vertex>();
+    for (Edge edge:edges){
+      Vertex[] vertexPair = edge.getVertices();
       if (vertexPair[0] == pVertex) {
-        result.append(vertexPair[1]);
+        result.add(vertexPair[1]);
       } else { 
         if (vertexPair[1] == pVertex){
-          result.append(vertexPair[0]);
+          result.add(vertexPair[0]);
         }
       }
-      edges.next();
     }    
     return result;
   }
@@ -254,18 +214,17 @@ public class Graph implements Serializable{
    * wird eine leere Liste zurueckgeliefert.
    */
   public List<Edge> getEdges(Vertex pVertex){
-    List<Edge> result = new List<Edge>();
-    edges.toFirst();
-    while (edges.hasAccess()){
-      Vertex[] vertexPair = edges.getContent().getVertices();
+    List<Edge> result = new ArrayList<Edge>();
+
+    for (Edge edge:edges){
+      Vertex[] vertexPair = edge.getVertices();
       if (vertexPair[0] == pVertex) {
-        result.append(edges.getContent());
+        result.add(edge);
       } else{ 
         if (vertexPair[1] == pVertex){
-          result.append(edges.getContent());
+          result.add(edge);
         }
       }
-      edges.next();
     }    
     return result;
   }
@@ -278,15 +237,15 @@ public class Graph implements Serializable{
    */
   public Edge getEdge(Vertex pVertex, Vertex pAnotherVertex){
     Edge result = null;
-    edges.toFirst();
-    while (edges.hasAccess()){
-      Vertex[] vertexPair = edges.getContent().getVertices();
+
+    for (Edge edge:edges){
+      Vertex[] vertexPair = edge.getVertices();
       if ((vertexPair[0] == pVertex && vertexPair[1] == pAnotherVertex) ||
       (vertexPair[0] == pAnotherVertex && vertexPair[1] == pVertex)) {
-        result = edges.getContent();
-        edges.toLast();
+        result = edge;
+        //edges.toLast();
+        break;//???
       } 
-      edges.next();
     }    
     return result;
   }
