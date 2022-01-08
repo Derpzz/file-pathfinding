@@ -10,7 +10,7 @@ public class Converter {
      * @return  Convertet List
      * @throws Exception CastError of ListElements during convertion
      */
-    static List<Coordinate> EdgeToCoordList(List<Vertex> list) throws Exception{
+    public static List<Coordinate> EdgeToCoordList(List<Vertex> list) throws Exception{
         List<Coordinate> result = new ArrayList<Coordinate>();
         for (Vertex vertex:list) {
             try{

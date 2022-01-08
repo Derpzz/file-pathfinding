@@ -26,46 +26,46 @@ public class Dijkstra {
         this.VertexList = new LinkedList<>();
     }
 
-    private void processVertices(Coordinate curVertex){
+    private void processVertices(Coordinate curVertex) throws Exception{
         if(curVertex == null)
             return;
+
+        Coordinate[] vertices = new Coordinate[2]; 
+        List<Edge> curEdges;
+        Vertex[] oldVertex;
+        int verPos;
 
         this.DijkstraGraph = OriginGraph;
         curVertex.setDistance(0);
 
-        while(curVertex!=null){
+        
+        do{
             curVertex.setMark(true);
-            List<Edge> curEdgesProp = DijkstraGraph.getEdges(curVertex);
-            List<Edge> curEdges = curEdgesProp;
+            curEdges = DijkstraGraph.getEdges(curVertex);
 
             for(Edge curEdge : curEdges){
                 //Convert Vertex[] to Coordinate[]
-                Coordinate[] vertices = new Coordinate[2]; 
-                Vertex[] oldVertex = curEdge.getVertices();
+                oldVertex = curEdge.getVertices();
                 vertices[0] = (Coordinate) oldVertex[0];
                 vertices[1] = (Coordinate) oldVertex[1];
 
-                if(vertices[0]==curVertex){
+                if(vertices[0]==curVertex)
+                    verPos = 1;
+                else if(vertices[1]==curVertex)
+                    verPos = 0;
+                else
+                    throw new Exception("Edge pointing and coming from same vertex");
+                
                     int distance = curVertex.getDistance() + (int) curEdge.getWeight();
-                    if(vertices[1].getDistance()==-1 || distance < vertices[1].getDistance()){
-                        vertices[1].setDistance(distance);
-                        vertices[1].setPrevious(curVertex);
+                    if(vertices[verPos].getDistance()==-1 || distance < vertices[verPos].getDistance()){
+                        vertices[verPos].setDistance(distance);
+                        vertices[verPos].setPrevious(curVertex);
                     }
-                if(!vertices[1].isMarked())
-                    VertexList.add(vertices[1]);
-
-                } else if(vertices[1]==curVertex){
-                    int distance = curVertex.getDistance() + (int) curEdge.getWeight();
-                    if(vertices[0].getDistance()==-1 || distance < vertices[0].getDistance()){
-                        vertices[0].setDistance(distance);
-                        vertices[0].setPrevious(curVertex);
-                    }
-                    if(!vertices[0].isMarked())
-                        VertexList.add(vertices[0]);
-                    }   
+                if(!vertices[verPos].isMarked())
+                    VertexList.add(vertices[verPos]);
             }
             curVertex = VertexList.poll();
-        }
+        }while(curVertex!=null);
         
         //processVertices(VertexList.poll()); For recursive exec
     }
@@ -108,7 +108,7 @@ public class Dijkstra {
         IO.writeCoordinatesToFile(filePath, path);
     }
 
-    private static Pair<Coordinate, Coordinate> getStartEnd(java.util.List<Coordinate> vertices) throws Exception{
+    private static Pair<Coordinate, Coordinate> getStartEnd(List<Coordinate> vertices) throws Exception{
         Pair<Coordinate, Coordinate> startToEnd = new Pair<Coordinate, Coordinate>();
         Coordinate from = null;
         Coordinate to = null;
